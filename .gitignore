@@ -1,0 +1,13 @@
+# Ignorer output-mappen og alt innhold
+output/
+
+# Ignorer spesifikke datafiler
+alma_export.csv
+*.csv
+
+# Ignorer cache-filer
+*.json
+
+# Ignorer Python-spesifikke filer
+__pycache__/
+*.pyc
