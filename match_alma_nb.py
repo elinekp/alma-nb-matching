@@ -15,7 +15,7 @@ import requests
 # =========================
 
 INPUT_CSV = "alma_export.csv"
-OUTPUT_DIR = Path("output_11.03")
+OUTPUT_DIR = Path("output_12.03")
 
 NB_ITEMS_URL = "https://api.nb.no/catalog/v1/items"
 
