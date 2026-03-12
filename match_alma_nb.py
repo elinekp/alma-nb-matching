@@ -540,21 +540,18 @@ def classify_candidate_scores(scored_candidates: List[Dict[str, Any]]) -> Tuple[
     return "not_found_candidate", "low_score", best["score_total"], second_score
 
 def is_likely_norwegian(row: Dict[str, str]) -> bool:
-    """
-    Vurderer relevans basert på landkode og ISBN.
-    """
-    country_code = (row.get(COL_COUNTRY_CODE, "") or "").strip().lower()
     isbn_raw = row.get(COL_ISBN, "") or ""
     isbn_list = extract_isbn_candidates(isbn_raw)
     
-    # Sjekk for norsk ISBN-prefiks (82 eller 97882)
-    has_norwegian_isbn = any(isbn.startswith("82") or isbn.startswith("97882") for isbn in isbn_list)
-
-    # Inklusjon: Landkode 'no' ELLER norsk ISBN
-    if country_code == "no" or has_norwegian_isbn:
+    # Hvis boka mangler ISBN, beholder vi den for sikkerhets skyld
+    if not isbn_list:
         return True
         
-    return False
+    # Hvis den HAR ISBN, sjekker vi om det er norsk eller om landkoden er 'no'
+    country_code = (row.get(COL_COUNTRY_CODE, "") or "").strip().lower()
+    has_norwegian_isbn = any(isbn.startswith("82") or isbn.startswith("97882") for isbn in isbn_list)
+    
+    return country_code == "no" or has_norwegian_isbn
 
 # =========================
 # FASE 1: ISBN
