@@ -1,0 +1,2 @@
+﻿alma_id,title,publication_date,author,contributor,publisher,error_message
+999715670504702213,Bygninger ved Norges landbrukshøgskole tegnet av arkitekt Ole Sverre,1997,"Aas, Erik 1927-2017",,E Aas,"Query search failed for '""Bygninger ved Norges landbrukshøgskole tegnet av arkitekt Ole Sverre"" Aas, Erik 1927-2017': HTTPSConnectionPool(host='api.nb.no', port=443): Read timed out. (read timeout=20)"

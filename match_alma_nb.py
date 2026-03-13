@@ -25,7 +25,7 @@ REQUEST_SLEEP_SECONDS = 0.1
 
 ISBN_CACHE_FILE = OUTPUT_DIR / "isbn_cache.json"
 QUERY_CACHE_FILE = OUTPUT_DIR / "query_cache.json"
-ERROR_LOG_FILE = OUTPUT_DIR / "feillogg_rader_som_ikke_ble_behandlet.xlsx"
+ERROR_LOG_FILE = OUTPUT_DIR / "feillogg_rader_som_ikke_ble_behandlet.csv"
 
 # Kolonnenavn i Alma-CSV
 COL_ID_CANDIDATES = ["MMS ID", "MMS_ID", "MMS Id", "mms_id", "Barcode", "barcode"]
@@ -542,10 +542,11 @@ def classify_candidate_scores(scored_candidates: List[Dict[str, Any]]) -> Tuple[
     second_score = scored_candidates[1]["score_total"] if len(scored_candidates) > 1 else 0
     margin = best["score_total"] - second_score
 
-    # Hvis treffet er svært sterkt, godtar vi det uavhengig av margin (håndterer duplikater i NB)
-    if best["score_total"] >= 105:
+    # Senk terskelen fra 105 til 70 eller 75 her
+    if best["score_total"] >= 75:
         return "confirmed_in_nb", f"high_score={best['score_total']}", best["score_total"], second_score
 
+    # Standard logikk for lavere poengsummer med margin-krav
     if best["score_total"] >= CONFIRMED_MIN_SCORE and margin >= CONFIRMED_MIN_MARGIN:
         return "confirmed_in_nb", f"score={best['score_total']}, margin={margin}", best["score_total"], second_score
 
