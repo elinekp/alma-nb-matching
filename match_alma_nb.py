@@ -746,6 +746,9 @@ def main() -> None:
     
     # 3. Filtrer dataene og behold resultatet i 'rows'
     rows = [r for r in raw_rows if is_likely_norwegian(r)]
+
+    excluded_rows = [r for r in raw_rows if not is_likely_norwegian(r)]
+
     total_rows = len(rows)
     
     filtered_count = total_input - total_rows
@@ -852,6 +855,12 @@ def main() -> None:
             "match_reason",
             "score_breakdown",
         ],
+    )
+
+    write_csv(
+        OUTPUT_DIR / "poster_filtrert_bort_før_match.csv",
+        excluded_rows,
+        list(raw_rows[0].keys()) if raw_rows else []
     )
 
     actual_no_isbn = total_rows - (len(found_isbn) + len(not_found_isbn))
