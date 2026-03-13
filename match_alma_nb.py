@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import pandas as pd
 import json
 import re
 import time
@@ -24,7 +25,7 @@ REQUEST_SLEEP_SECONDS = 0.1
 
 ISBN_CACHE_FILE = OUTPUT_DIR / "isbn_cache.json"
 QUERY_CACHE_FILE = OUTPUT_DIR / "query_cache.json"
-ERROR_LOG_FILE = OUTPUT_DIR / "feillogg_rader_som_ikke_ble_behandlet.csv"
+ERROR_LOG_FILE = OUTPUT_DIR / "feillogg_rader_som_ikke_ble_behandlet.xlsx"
 
 # Kolonnenavn i Alma-CSV
 COL_ID_CANDIDATES = ["MMS ID", "MMS_ID", "MMS Id", "mms_id", "Barcode", "barcode"]
@@ -68,6 +69,20 @@ def write_csv(path: Path, rows: List[Dict[str, Any]], fieldnames: List[str]) -> 
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
+
+def write_xlsx(path: Path, rows: List[Dict[str, Any]], fieldnames: List[str]) -> None:
+    if not rows:
+        return
+    
+    # Konverterer listen med dicts til en DataFrame
+    df = pd.DataFrame(rows)
+    
+    # Sørger for at kun ønskede kolonner blir med og i riktig rekkefølge
+    existing_cols = [c for c in fieldnames if c in df.columns]
+    df = df[existing_cols]
+    
+    # Skriver til Excel uten index-kolonne
+    df.to_excel(path, index=False, engine='openpyxl')
 
 
 def append_error_row(row: Dict[str, Any], error_message: str) -> None:
@@ -764,8 +779,8 @@ def main() -> None:
     save_json_file(QUERY_CACHE_FILE, query_cache)
     
 
-    write_csv(
-        OUTPUT_DIR / "poster_funnet_i_nb_via_isbn.csv",
+    write_xlsx(
+        OUTPUT_DIR / "poster_funnet_i_nb_via_isbn.xlsx",
         found_isbn,
         [
             "alma_id",
@@ -783,8 +798,8 @@ def main() -> None:
         ],
     )
 
-    write_csv(
-        OUTPUT_DIR / "poster_med_isbn_ikke_funnet_via_isbn.csv",
+    write_xlsx(
+        OUTPUT_DIR / "poster_med_isbn_ikke_funnet_via_isbn.xlsx",
         not_found_isbn,
         [
             "alma_id",
@@ -796,8 +811,8 @@ def main() -> None:
         ],
     )
 
-    write_csv(
-        OUTPUT_DIR / "poster_sendt_til_metadata_match.csv",
+    write_xlsx(
+        OUTPUT_DIR / "poster_sendt_til_metadata_match.xlsx",
         no_isbn_rows,
         [
             "alma_id",
@@ -809,8 +824,8 @@ def main() -> None:
         ],
     )
 
-    write_csv(
-        OUTPUT_DIR / "resultat_metadata_match.csv",
+    write_xlsx(
+        OUTPUT_DIR / "resultat_metadata_match.xlsx",
         candidate_results,
         [
             "alma_id",
@@ -833,8 +848,8 @@ def main() -> None:
         ],
     )
 
-    write_csv(
-        OUTPUT_DIR / "poster_til_manuell_kontroll.csv",
+    write_xlsx(
+        OUTPUT_DIR / "poster_til_manuell_kontroll.xlsx",
         needs_manual,
         [
             "alma_id",
@@ -857,8 +872,8 @@ def main() -> None:
         ],
     )
 
-    write_csv(
-        OUTPUT_DIR / "poster_filtrert_bort_før_match.csv",
+    write_xlsx(
+        OUTPUT_DIR / "poster_filtrert_bort_før_match.xlsx",
         excluded_rows,
         list(raw_rows[0].keys()) if raw_rows else []
     )
